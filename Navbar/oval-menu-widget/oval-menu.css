@@ -1,0 +1,266 @@
+/* ═══════════════════════════════════════════════════════════════
+   OVAL MENU WIDGET  —  oval-menu.css
+   نحوه استفاده: فایل را به هد سایت لینک کنید
+   <link rel="stylesheet" href="oval-menu.css">
+═══════════════════════════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+/* ── Variables ────────────────────────────────────────────────── */
+:root {
+  --om-font:        'Plus Jakarta Sans', system-ui, sans-serif;
+  --om-bg:          rgba(255,255,255,0.03);
+  --om-bg-hover:    rgba(255,255,255,0.09);
+  --om-bg-active:   rgba(255,255,255,0.07);
+  --om-border:      rgba(255,255,255,0.08);
+  --om-text:        rgba(255,255,255,0.45);
+  --om-text-hover:  rgba(255,255,255,0.95);
+  --om-pill-w:      230px;
+  --om-pill-h:      54px;
+  --om-gap:         12px;
+  --om-radius:      999px;
+  --om-border-w:    2.5px;
+  --om-glow-blur:   10px;
+  --om-speed:       0.03;   /* rotation speed — higher = faster */
+}
+
+/* ── Wrapper ──────────────────────────────────────────────────── */
+.om-sidebar {
+  display: inline-flex;
+  flex-direction: column;
+  gap: var(--om-gap);
+  font-family: var(--om-font);
+  position: relative;
+  padding: 8px 0;
+}
+
+/* Vertical connector line */
+.om-sidebar::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 36px;
+  bottom: 36px;
+  width: 1px;
+  transform: translateX(-50%);
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(255,255,255,0.07) 25%,
+    rgba(255,255,255,0.07) 75%,
+    transparent
+  );
+  pointer-events: none;
+}
+
+/* ── Item ─────────────────────────────────────────────────────── */
+.om-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  /* entrance animation */
+  opacity: 0;
+  transform: translateX(-18px);
+  animation: omSlideIn 0.5s cubic-bezier(.22,1,.36,1) forwards;
+}
+
+@keyframes omSlideIn {
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* stagger each item */
+.om-item:nth-child(1)  { animation-delay: .05s }
+.om-item:nth-child(2)  { animation-delay: .10s }
+.om-item:nth-child(3)  { animation-delay: .15s }
+.om-item:nth-child(4)  { animation-delay: .20s }
+.om-item:nth-child(5)  { animation-delay: .25s }
+.om-item:nth-child(6)  { animation-delay: .30s }
+.om-item:nth-child(7)  { animation-delay: .35s }
+.om-item:nth-child(8)  { animation-delay: .40s }
+.om-item:nth-child(9)  { animation-delay: .45s }
+.om-item:nth-child(10) { animation-delay: .50s }
+
+/* ── Pill shell ───────────────────────────────────────────────── */
+.om-pill {
+  position: relative;
+  width: var(--om-pill-w);
+  height: var(--om-pill-h);
+  border-radius: var(--om-radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 11px;
+  background: var(--om-bg);
+  border: 1px solid var(--om-border);
+  transition:
+    background 0.3s ease,
+    border-color 0.3s ease,
+    transform 0.25s cubic-bezier(.34,1.56,.64,1),
+    box-shadow 0.3s ease;
+  overflow: visible;
+  text-decoration: none;
+  z-index: 1;
+}
+
+.om-item:hover .om-pill {
+  background: var(--om-bg-hover);
+  border-color: transparent;
+  transform: scale(1.04);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.28);
+}
+
+.om-item.is-active .om-pill {
+  background: var(--om-bg-active);
+  border-color: transparent;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.22);
+}
+
+/* ── Canvas (rainbow border) ──────────────────────────────────── */
+.om-pill canvas {
+  position: absolute;
+  inset: -5px;
+  width:  calc(100% + 10px);
+  height: calc(100% + 10px);
+  border-radius: var(--om-radius);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: -1;
+}
+
+.om-item:hover  .om-pill canvas,
+.om-item.is-active .om-pill canvas {
+  opacity: 1;
+}
+
+/* ── Icon ─────────────────────────────────────────────────────── */
+.om-icon {
+  font-size: 18px;
+  line-height: 1;
+  flex-shrink: 0;
+  transition: transform 0.35s cubic-bezier(.34,1.56,.64,1);
+  will-change: transform;
+}
+
+.om-item:hover .om-icon {
+  transform: scale(1.28) rotate(-6deg);
+}
+
+/* ── Label ────────────────────────────────────────────────────── */
+.om-label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--om-text);
+  letter-spacing: 0.025em;
+  transition: color 0.25s ease, font-weight 0.01s;
+  white-space: nowrap;
+  flex: 1;
+}
+
+.om-item:hover .om-label,
+.om-item.is-active .om-label {
+  color: var(--om-text-hover);
+  font-weight: 700;
+}
+
+/* ── Badge (optional notification dot/count) ──────────────────── */
+.om-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  line-height: 1;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.12);
+  color: rgba(255,255,255,0.7);
+  letter-spacing: 0;
+  flex-shrink: 0;
+  transition: background 0.25s;
+}
+
+.om-item:hover .om-badge {
+  background: rgba(255,255,255,0.22);
+  color: #fff;
+}
+
+/* ── Active dot ───────────────────────────────────────────────── */
+.om-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+  opacity: 0;
+  transform: scale(0);
+  transition: opacity 0.3s ease, transform 0.35s cubic-bezier(.34,1.56,.64,1);
+}
+
+.om-item.is-active .om-dot {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* ── Tooltip on hover (shows data-tooltip) ────────────────────── */
+.om-item[data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  left: calc(100% + 14px);
+  top: 50%;
+  transform: translateY(-50%) translateX(-6px);
+  background: rgba(20,20,32,0.95);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.85);
+  font-family: var(--om-font);
+  font-size: 0.76rem;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 8px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.35);
+  z-index: 100;
+}
+
+.om-item[data-tooltip]:hover::after {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+}
+
+/* ── Ripple click effect ──────────────────────────────────────── */
+.om-ripple {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--om-radius);
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.om-ripple-dot {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.18);
+  transform: scale(0);
+  animation: omRipple 0.55s ease-out forwards;
+  pointer-events: none;
+}
+
+@keyframes omRipple {
+  to { transform: scale(4); opacity: 0; }
+}
+
+/* ── Dark / light theme support ───────────────────────────────── */
+@media (prefers-color-scheme: light) {
+  :root {
+    --om-bg:          rgba(0,0,0,0.04);
+    --om-bg-hover:    rgba(0,0,0,0.08);
+    --om-bg-active:   rgba(0,0,0,0.06);
+    --om-border:      rgba(0,0,0,0.08);
+    --om-text:        rgba(0,0,0,0.45);
+    --om-text-hover:  rgba(0,0,0,0.9);
+  }
+}

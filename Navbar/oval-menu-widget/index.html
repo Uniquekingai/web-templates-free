@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Oval Menu — Demo</title>
+
+<!-- ① فایل CSS را لینک کنید -->
+<link rel="stylesheet" href="oval-menu.css">
+
+<style>
+/* ── Page layout (این بخش مخصوص دمو است، برای سایت شما لازم نیست) ── */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  min-height: 100vh;
+  background: #0b0b14;
+  display: flex;
+  align-items: stretch;
+  overflow: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background:
+    radial-gradient(ellipse 55% 70% at 8% 50%, rgba(90,40,200,0.14) 0%, transparent 65%),
+    radial-gradient(ellipse 45% 55% at 92% 30%, rgba(20,130,210,0.10) 0%, transparent 65%),
+    radial-gradient(ellipse 40% 40% at 55% 85%, rgba(200,40,100,0.08) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── Sidebar panel ── */
+.sidebar-panel {
+  position: relative;
+  z-index: 10;
+  width: 290px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 28px;
+  border-left: 1px solid rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.02);
+  backdrop-filter: blur(12px);
+  gap: 28px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  margin-bottom: 8px;
+  align-self: flex-start;
+  padding-right: 8px;
+}
+.brand-icon {
+  width: 36px; height: 36px;
+  background: linear-gradient(135deg,#6a3de8,#e83d8a);
+  border-radius: 10px;
+  display: grid; place-items: center;
+  font-size: 17px;
+}
+.brand-name {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.01em;
+}
+
+/* rtl adjustment for menu items */
+.om-pill { flex-direction: row-reverse; }
+.om-dot  { margin-right: 0; margin-left: 0; }
+
+/* ── Main content area ── */
+.main-content {
+  flex: 1;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px;
+  gap: 20px;
+}
+
+.page-label {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.28);
+}
+
+.page-title {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: clamp(1.8rem, 4vw, 3.2rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  background: linear-gradient(135deg,#fff 10%,#b48dff 55%,#ff6fa8 90%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-align: center;
+  line-height: 1.15;
+}
+
+.page-desc {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.95rem;
+  color: rgba(255,255,255,0.38);
+  text-align: center;
+  max-width: 460px;
+  line-height: 1.8;
+  font-weight: 300;
+}
+
+.active-badge {
+  margin-top: 12px;
+  padding: 10px 22px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.04);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.82rem;
+  color: rgba(255,255,255,0.5);
+}
+.active-badge span {
+  color: #fff;
+  font-weight: 700;
+}
+
+/* ── Instructions card ── */
+.instructions {
+  position: absolute;
+  bottom: 36px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 14px 28px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.07);
+  background: rgba(255,255,255,0.03);
+  backdrop-filter: blur(10px);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.35);
+  white-space: nowrap;
+  display: flex;
+  gap: 24px;
+}
+.instructions b { color: rgba(255,255,255,0.65); }
+</style>
+</head>
+<body>
+
+<!-- ════════ SIDEBAR ════════ -->
+<aside class="sidebar-panel">
+
+  <a href="#" class="brand">
+    <div class="brand-icon">⚡</div>
+    <span class="brand-name">MySite</span>
+  </a>
+
+  <!-- ② ساختار منو — فقط این بخش را کپی کنید -->
+  <nav class="om-sidebar">
+
+    <div class="om-item is-active" data-page="خانه"     data-palette="0">
+      <div class="om-pill">
+        <canvas></canvas>
+        <span class="om-icon">🏠</span>
+        <span class="om-label">خانه</span>
+        <span class="om-dot"></span>
+      </div>
+    </div>
+
+    <div class="om-item" data-page="درباره ما" data-palette="1">
+      <div class="om-pill">
+        <canvas></canvas>
+        <span class="om-icon">👤</span>
+        <span class="om-label">درباره ما</span>
+        <span class="om-dot"></span>
+      </div>
+    </div>
+
+    <div class="om-item" data-page="خدمات" data-palette="2">
+      <div class="om-pill">
+        <canvas></canvas>
+        <span class="om-icon">⚙️</span>
+        <span class="om-label">خدمات</span>
+        <span class="om-dot"></span>
+      </div>
+    </div>
+
+    <div class="om-item" data-page="نمونه کارها" data-palette="3">
+      <div class="om-pill">
+        <canvas></canvas>
+        <span class="om-icon">🖼️</span>
+        <span class="om-label">نمونه کارها</span>
+        <span class="om-dot"></span>
+      </div>
+    </div>
+
+    <div class="om-item" data-page="وبلاگ" data-palette="4">
+      <div class="om-pill">
+        <canvas></canvas>
+        <span class="om-icon">📝</span>
+        <span class="om-label">وبلاگ</span>
+        <span class="om-badge">۵</span>
+        <span class="om-dot"></span>
+      </div>
+    </div>
+
+    <div class="om-item" data-page="فروشگاه" data-palette="5">
+      <div class="om-pill">
+        <canvas></canvas>
+        <span class="om-icon">🛒</span>
+        <span class="om-label">فروشگاه</span>
+        <span class="om-badge">New</span>
+        <span class="om-dot"></span>
+      </div>
+    </div>
+
+    <div class="om-item" data-page="گالری" data-palette="6">
+      <div class="om-pill">
+        <canvas></canvas>
+        <span class="om-icon">🎨</span>
+        <span class="om-label">گالری</span>
+        <span class="om-dot"></span>
+      </div>
+    </div>
+
+    <div class="om-item" data-page="تماس با ما" data-palette="7">
+      <div class="om-pill">
+        <canvas></canvas>
+        <span class="om-icon">✉️</span>
+        <span class="om-label">تماس با ما</span>
+        <span class="om-dot"></span>
+      </div>
+    </div>
+
+  </nav>
+  <!-- ② پایان منو -->
+
+</aside>
+
+<!-- ════════ CONTENT ════════ -->
+<main class="main-content">
+  <p class="page-label">منوی بیضی متحرک</p>
+  <h1 class="page-title">روی هر بخش<br>هاور کنید</h1>
+  <p class="page-desc">
+    هر آیتم منو داخل یک بیضی قرار دارد. با نگه داشتن ماوس روی آن،
+    متن بولد شده و یک نوار رنگی متحرک دور بیضی می‌چرخد.
+    هر آیتم رنگ منحصربه‌فرد خودش را دارد.
+  </p>
+  <div class="active-badge">صفحه فعال: <span id="activeName">خانه</span></div>
+
+  <div class="instructions">
+    <span>🖱️ <b>Hover</b> = نوار رنگی</span>
+    <span>🖱️ <b>Click</b> = فعال شدن آیتم</span>
+    <span>⚡ <b>data-palette</b> = تغییر رنگ</span>
+  </div>
+</main>
+
+<!-- ③ فایل JS را قبل از بستن body اضافه کنید -->
+<script src="oval-menu.js"></script>
+
+<script>
+  /* اختیاری: گوش دادن به رویداد انتخاب آیتم */
+  document.querySelector('.om-sidebar').addEventListener('om:select', e => {
+    document.getElementById('activeName').textContent = e.detail.page;
+  });
+</script>
+
+</body>
+</html>
