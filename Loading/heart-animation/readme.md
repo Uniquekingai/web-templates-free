@@ -1,8 +1,9 @@
----
-
 # 💛 Heart Animation Loader
 
-## 🇺🇸 English
+![Preview](preview.png)
+
+A beautiful animated heart loader...
+# 💛 Heart Animation Loader
 
 A beautiful and creative **loading animation** where a glowing line draws a heart shape dynamically.
 
