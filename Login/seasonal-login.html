@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Seasonal Login</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --glass-bg: rgba(255,255,255,0.12);
+  --glass-border: rgba(255,255,255,0.25);
+  --glass-shadow: rgba(0,0,0,0.18);
+  --text: #fff;
+  --text-soft: rgba(255,255,255,0.7);
+  --input-bg: rgba(255,255,255,0.15);
+  --input-border: rgba(255,255,255,0.3);
+  --btn-bg: rgba(255,255,255,0.22);
+  --btn-hover: rgba(255,255,255,0.35);
+  --accent: #fff;
+}
+
+html, body {
+  height: 100%;
+  font-family: 'Jost', sans-serif;
+  overflow: hidden;
+}
+
+/* ── Scene ─────────────────────────────────────────────────────────────────── */
+.scene {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 1.5s ease;
+}
+
+/* ── Season backgrounds ────────────────────────────────────────────────────── */
+.scene.spring  { background: linear-gradient(160deg, #a8edea 0%, #c8f0b0 40%, #f9d4e8 100%); }
+.scene.summer  { background: linear-gradient(160deg, #f7971e 0%, #ffd200 45%, #ff6b6b 100%); }
+.scene.autumn  { background: linear-gradient(160deg, #b34700 0%, #e07b1a 40%, #f7c948 100%); }
+.scene.winter  { background: linear-gradient(160deg, #1c3a5e 0%, #3a7bd5 50%, #a8d0f5 100%); }
+
+/* ── Canvas for particles ──────────────────────────────────────────────────── */
+canvas#particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ── Ground / atmosphere layers ───────────────────────────────────────────── */
+.ground {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 28%;
+  z-index: 2;
+  pointer-events: none;
+  transition: background 1.5s ease, opacity 1.5s;
+}
+.spring  .ground { background: linear-gradient(to top, #5cb85c, #a8e6a3, transparent); }
+.summer  .ground { background: linear-gradient(to top, #b5781a, #e8b54e, transparent); }
+.autumn  .ground { background: linear-gradient(to top, #7a3300, #c06020, transparent); }
+.winter  .ground { background: linear-gradient(to top, #d0e8ff, #eaf4ff, transparent); }
+
+/* ── Season label ─────────────────────────────────────────────────────────── */
+.season-badge {
+  position: absolute;
+  top: 22px; right: 28px;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 0.9rem;
+  font-weight: 300;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.75);
+  z-index: 10;
+}
+
+/* ── Glass card ───────────────────────────────────────────────────────────── */
+.card {
+  position: relative;
+  z-index: 10;
+  width: min(380px, 90vw);
+  padding: 48px 40px 40px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 24px;
+  backdrop-filter: blur(22px) saturate(1.6);
+  -webkit-backdrop-filter: blur(22px) saturate(1.6);
+  box-shadow: 0 24px 60px var(--glass-shadow), inset 0 1px 0 rgba(255,255,255,0.3);
+  animation: cardIn 0.9s cubic-bezier(.22,1,.36,1) forwards;
+}
+
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(28px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Season icon */
+.season-icon {
+  text-align: center;
+  font-size: 2.4rem;
+  margin-bottom: 6px;
+  animation: iconBounce 3s ease-in-out infinite;
+}
+@keyframes iconBounce {
+  0%,100% { transform: translateY(0); }
+  50%      { transform: translateY(-6px); }
+}
+
+h1 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2rem;
+  font-weight: 400;
+  color: var(--text);
+  text-align: center;
+  margin-bottom: 6px;
+  letter-spacing: 0.04em;
+}
+
+.subtitle {
+  text-align: center;
+  font-size: 0.78rem;
+  font-weight: 300;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-soft);
+  margin-bottom: 36px;
+}
+
+/* ── Inputs ───────────────────────────────────────────────────────────────── */
+.field {
+  position: relative;
+  margin-bottom: 18px;
+}
+.field label {
+  display: block;
+  font-size: 0.7rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-soft);
+  margin-bottom: 7px;
+  font-weight: 400;
+}
+.field input {
+  width: 100%;
+  padding: 13px 18px;
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: 12px;
+  color: #fff;
+  font-family: 'Jost', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 300;
+  outline: none;
+  transition: border-color 0.3s, background 0.3s, box-shadow 0.3s;
+}
+.field input::placeholder { color: rgba(255,255,255,0.4); }
+.field input:focus {
+  border-color: rgba(255,255,255,0.6);
+  background: rgba(255,255,255,0.22);
+  box-shadow: 0 0 0 3px rgba(255,255,255,0.1);
+}
+
+/* ── Button ───────────────────────────────────────────────────────────────── */
+.btn {
+  width: 100%;
+  padding: 14px;
+  margin-top: 8px;
+  background: var(--btn-bg);
+  border: 1px solid rgba(255,255,255,0.4);
+  border-radius: 12px;
+  color: #fff;
+  font-family: 'Jost', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.25s, transform 0.15s, box-shadow 0.25s;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.btn:hover {
+  background: var(--btn-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+}
+.btn:active { transform: translateY(0); }
+
+/* ── Footer links ─────────────────────────────────────────────────────────── */
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 22px;
+}
+.card-footer a {
+  font-size: 0.76rem;
+  color: var(--text-soft);
+  text-decoration: none;
+  letter-spacing: 0.08em;
+  transition: color 0.2s;
+}
+.card-footer a:hover { color: #fff; }
+
+/* ── Divider ──────────────────────────────────────────────────────────────── */
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 22px 0 0;
+}
+.divider span { flex: 1; height: 1px; background: rgba(255,255,255,0.18); }
+.divider p { font-size: 0.72rem; color: var(--text-soft); letter-spacing: 0.1em; }
+
+/* ── Winter snowflake accent ──────────────────────────────────────────────── */
+.snow-accent {
+  position: absolute;
+  top: -1px; left: -1px; right: -1px;
+  height: 4px;
+  border-radius: 24px 24px 0 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent);
+  display: none;
+}
+.winter .snow-accent { display: block; }
+</style>
+</head>
+<body>
+
+<div class="scene" id="scene">
+  <canvas id="particles"></canvas>
+  <div class="ground"></div>
+  <div class="season-badge" id="seasonBadge"></div>
+
+  <div class="card">
+    <div class="snow-accent"></div>
+    <div class="season-icon" id="seasonIcon"></div>
+    <h1 id="cardTitle">Sign In</h1>
+    <p class="subtitle" id="cardSub">Welcome back</p>
+
+    <div class="field">
+      <label>Username</label>
+      <input type="text" placeholder="Enter your username">
+    </div>
+    <div class="field">
+      <label>Password</label>
+      <input type="password" placeholder="••••••••">
+    </div>
+
+    <button class="btn" id="loginBtn">Login</button>
+
+    <div class="divider"><span></span><p>or</p><span></span></div>
+
+    <div class="card-footer">
+      <a href="#">Forget Password?</a>
+      <a href="#">Sign Up</a>
+    </div>
+  </div>
+</div>
+
+<canvas id="particles"></canvas>
+
+<script>
+// ── Season detection ─────────────────────────────────────────────────────────
+const month = new Date().getMonth(); // 0-11
+const getSeason = (m) => {
+  if (m >= 2 && m <= 4) return 'spring';
+  if (m >= 5 && m <= 7) return 'summer';
+  if (m >= 8 && m <= 10) return 'autumn';
+  return 'winter';
+};
+const season = getSeason(month);
+
+const SEASONS = {
+  spring: {
+    icon: '🌸',
+    title: 'Sign In',
+    sub: 'Spring is in the air',
+    badge: 'Spring',
+    btnText: 'Blossom In →',
+    particle: { emoji: ['🌸','🌺','🍀','🌼'], color: ['#ffb7c5','#ff85a1','#c8f5a0','#fff4a0'], count: 30 },
+  },
+  summer: {
+    icon: '☀️',
+    title: 'Sign In',
+    sub: 'Good vibes only',
+    badge: 'Summer',
+    btnText: 'Dive In →',
+    particle: { emoji: ['✨','🌟','💛','🍊'], color: ['#ffe066','#ffaa33','#ff6b6b','#fff'], count: 35 },
+  },
+  autumn: {
+    icon: '🍂',
+    title: 'Sign In',
+    sub: 'Golden season awaits',
+    badge: 'Autumn',
+    btnText: 'Fall In →',
+    particle: { emoji: ['🍂','🍁','🍃','🌰'], color: ['#e07b1a','#c45000','#f7c948','#a03000'], count: 32 },
+  },
+  winter: {
+    icon: '❄️',
+    title: 'Sign In',
+    sub: 'Cold outside, warm inside',
+    badge: 'Winter',
+    btnText: 'Step In →',
+    particle: { emoji: ['❄️','⛄','✨','🌨️'], color: ['#d0eeff','#a8d0ff','#ffffff','#c8e8ff'], count: 40 },
+  },
+};
+
+// Apply season
+const s = SEASONS[season];
+const scene = document.getElementById('scene');
+scene.classList.add(season);
+document.getElementById('seasonIcon').textContent = s.icon;
+document.getElementById('cardTitle').textContent = s.title;
+document.getElementById('cardSub').textContent = s.sub;
+document.getElementById('seasonBadge').textContent = s.badge;
+document.getElementById('loginBtn').textContent = s.btnText;
+
+// ── Canvas particles ─────────────────────────────────────────────────────────
+const canvas = document.getElementById('particles');
+canvas.style.cssText = 'position:absolute;inset:0;pointer-events:none;z-index:1;';
+scene.insertBefore(canvas, scene.firstChild);
+const ctx = canvas.getContext('2d');
+
+function resize() { canvas.width = innerWidth; canvas.height = innerHeight; }
+resize();
+window.addEventListener('resize', resize);
+
+const cfg = s.particle;
+const parts = [];
+
+for (let i = 0; i < cfg.count; i++) {
+  parts.push(spawnParticle(true));
+}
+
+function spawnParticle(initial) {
+  const size = 10 + Math.random() * 16;
+  return {
+    x: Math.random() * innerWidth,
+    y: initial ? Math.random() * innerHeight : -size,
+    vx: (Math.random() - 0.5) * (season === 'winter' ? 0.4 : 0.8),
+    vy: 0.5 + Math.random() * (season === 'winter' ? 1.2 : 1.5),
+    rot: Math.random() * 360,
+    rotV: (Math.random() - 0.5) * (season === 'autumn' ? 3 : 1.5),
+    size,
+    emoji: cfg.emoji[Math.floor(Math.random() * cfg.emoji.length)],
+    color: cfg.color[Math.floor(Math.random() * cfg.color.length)],
+    alpha: 0.55 + Math.random() * 0.45,
+    wobble: Math.random() * Math.PI * 2,
+    wobbleS: 0.01 + Math.random() * 0.02,
+    // for winter: snowflake dots instead of emoji
+    isSnow: season === 'winter' && Math.random() > 0.5,
+    r: 2 + Math.random() * 4,
+  };
+}
+
+let frame = 0;
+function animate() {
+  frame++;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  parts.forEach((p, i) => {
+    p.y += p.vy;
+    p.x += p.vx + Math.sin(p.wobble + frame * p.wobbleS) * 0.5;
+    p.rot += p.rotV;
+    if (p.y > innerHeight + 40) Object.assign(p, spawnParticle(false));
+
+    ctx.save();
+    ctx.globalAlpha = p.alpha;
+    ctx.translate(p.x, p.y);
+    ctx.rotate(p.rot * Math.PI / 180);
+
+    if (p.isSnow) {
+      // Simple snow dot with glow
+      ctx.shadowBlur = 8;
+      ctx.shadowColor = '#a8d0ff';
+      ctx.beginPath();
+      ctx.arc(0, 0, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = p.color;
+      ctx.fill();
+    } else {
+      ctx.font = `${p.size}px serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(p.emoji, 0, 0);
+    }
+    ctx.restore();
+  });
+
+  requestAnimationFrame(animate);
+}
+animate();
+
+// ── Button ripple ────────────────────────────────────────────────────────────
+document.getElementById('loginBtn').addEventListener('click', function(e) {
+  const r = document.createElement('span');
+  r.style.cssText = `position:absolute;border-radius:50%;background:rgba(255,255,255,0.35);
+    width:10px;height:10px;transform:scale(0);animation:ripple .6s linear;
+    left:${e.offsetX-5}px;top:${e.offsetY-5}px;pointer-events:none;`;
+  this.style.position = 'relative';
+  this.style.overflow = 'hidden';
+  this.appendChild(r);
+  const style = document.createElement('style');
+  style.textContent = `@keyframes ripple{to{transform:scale(40);opacity:0}}`;
+  document.head.appendChild(style);
+  setTimeout(() => r.remove(), 700);
+});
+</script>
+</body>
+</html>
