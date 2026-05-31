@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dock Menu — Demo</title>
+<link rel="stylesheet" href="dock-menu.css">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  min-height: 100vh;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  background: #0f0f1a;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 60px;
+  padding: 40px 20px;
+  overflow: hidden;
+}
+
+/* Background blobs */
+body::before, body::after {
+  content: '';
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: 0;
+}
+body::before {
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(99,102,241,0.2) 0%, transparent 70%);
+  top: -100px; left: -100px;
+}
+body::after {
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(236,72,153,0.15) 0%, transparent 70%);
+  bottom: -80px; right: -80px;
+}
+
+/* Content */
+.content {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+.label {
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.28);
+}
+.title {
+  font-size: clamp(1.8rem, 5vw, 3rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  background: linear-gradient(135deg, #fff 10%, #818cf8 55%, #ec4899 90%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1.15;
+}
+.desc {
+  font-size: 0.9rem;
+  color: rgba(255,255,255,0.35);
+  max-width: 420px;
+  line-height: 1.8;
+  font-weight: 300;
+}
+.active-label {
+  margin-top: 4px;
+  padding: 8px 20px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.04);
+  font-size: 0.8rem;
+  color: rgba(255,255,255,0.45);
+}
+.active-label span { color: #fff; font-weight: 700; }
+
+/* Section title */
+.section-title {
+  position: relative;
+  z-index: 1;
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.22);
+  margin-bottom: -44px;
+}
+
+/* Dock container */
+.dock-container {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ── Dark glass theme (default) ─────── already in CSS ─────────── */
+
+/* ── Light glass variant ────────────────────────────────────────── */
+.dock-wrap.dock-light {
+  --dock-bg:     rgba(255, 255, 255, 0.55);
+  --dock-border: rgba(255, 255, 255, 0.8);
+  --dock-shadow: rgba(0, 0, 0, 0.12);
+  background: rgba(255,255,255,0.55);
+  border-color: rgba(255,255,255,0.8);
+}
+.dock-wrap.dock-light .dock-icon {
+  background: rgba(255,255,255,0.7);
+  border-color: rgba(0,0,0,0.06);
+  color: #1e1e2e;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.9);
+}
+.dock-wrap.dock-light .dock-dot { background: #1e1e2e; }
+.dock-wrap.dock-light .dock-separator { background: rgba(0,0,0,0.15); }
+
+/* icon SVG / emoji sizing helper */
+.dock-icon svg {
+  width: 55%;
+  height: 55%;
+  flex-shrink: 0;
+}
+</style>
+</head>
+<body>
+
+<!-- ════════════════ HERO ════════════════ -->
+<div class="content">
+  <p class="label">Animated Dock Menu</p>
+  <h1 class="title">Apple‑Style Dock<br>با افکت بزرگ‌نمایی</h1>
+  <p class="desc">
+    ماوس را روی آیکون‌ها حرکت دهید — آیکون مرکزی و همسایه‌هایش
+    به‌صورت تدریجی بزرگ می‌شوند، درست مانند Dock مک‌اواس.
+  </p>
+  <div class="active-label">انتخاب: <span id="activeName">—</span></div>
+</div>
+
+<!-- ════════════ DOCK 1 — Dark Glass ════════════ -->
+<div class="dock-container">
+  <p class="section-title">Dark Glass</p>
+
+  <!-- ② این بخش را در سایت خود کپی کنید -->
+  <div class="dock-wrap" id="dock1">
+
+    <div class="dock-item is-active" data-label="خانه" data-color="blue">
+      <div class="dock-icon">🏠</div>
+    </div>
+
+    <div class="dock-item" data-label="اسناد" data-color="orange">
+      <div class="dock-icon">
+        📄
+        <!-- badge نمونه -->
+      </div>
+    </div>
+
+    <div class="dock-item" data-label="پیام‌ها" data-color="green">
+      <div class="dock-icon">
+        ✉️
+        <span class="dock-badge">12</span>
+      </div>
+    </div>
+
+    <div class="dock-item" data-label="تقویم" data-color="red">
+      <div class="dock-icon">📅</div>
+    </div>
+
+    <div class="dock-item" data-label="موزیک" data-color="pink">
+      <div class="dock-icon">🎵</div>
+    </div>
+
+    <div class="dock-separator"></div>
+
+    <div class="dock-item" data-label="برنامه‌ها" data-color="purple">
+      <div class="dock-icon">⊞</div>
+    </div>
+
+    <div class="dock-item" data-label="تنظیمات" data-color="cyan">
+      <div class="dock-icon">⚙️</div>
+    </div>
+
+    <div class="dock-item" data-label="پروفایل" data-color="yellow">
+      <div class="dock-icon">
+        👤
+        <span class="dock-badge">1</span>
+      </div>
+    </div>
+
+  </div>
+  <!-- ② پایان dock -->
+</div>
+
+<!-- ════════════ DOCK 2 — Light Glass ════════════ -->
+<div class="dock-container">
+  <p class="section-title">Light Glass</p>
+
+  <div class="dock-wrap dock-light" id="dock2">
+
+    <div class="dock-item is-active" data-label="Home">
+      <div class="dock-icon">🏠</div>
+    </div>
+    <div class="dock-item" data-label="Files">
+      <div class="dock-icon">📁</div>
+    </div>
+    <div class="dock-item" data-label="Mail">
+      <div class="dock-icon">
+        📬
+        <span class="dock-badge">3</span>
+      </div>
+    </div>
+    <div class="dock-item" data-label="Calendar">
+      <div class="dock-icon">📅</div>
+    </div>
+    <div class="dock-separator"></div>
+    <div class="dock-item" data-label="Music">
+      <div class="dock-icon">🎶</div>
+    </div>
+    <div class="dock-item" data-label="Settings">
+      <div class="dock-icon">⚙️</div>
+    </div>
+    <div class="dock-item" data-label="Profile">
+      <div class="dock-icon">🙂</div>
+    </div>
+
+  </div>
+</div>
+
+<script src="dock-menu.js"></script>
+<script>
+  /* گوش دادن به رویداد انتخاب */
+  document.addEventListener('dock:select', e => {
+    document.getElementById('activeName').textContent = e.detail.label;
+  });
+</script>
+</body>
+</html>

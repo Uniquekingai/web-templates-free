@@ -1,0 +1,268 @@
+/* ═══════════════════════════════════════════════════════════════
+   ANIMATED DOCK MENU  —  dock-menu.css
+   <link rel="stylesheet" href="dock-menu.css">
+═══════════════════════════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+:root {
+  --dock-font:        'Plus Jakarta Sans', system-ui, sans-serif;
+  --dock-bg:          rgba(255, 255, 255, 0.15);
+  --dock-border:      rgba(255, 255, 255, 0.35);
+  --dock-shadow:      rgba(0, 0, 0, 0.25);
+  --dock-item-size:   52px;
+  --dock-item-max:    82px;      /* max size on hover center */
+  --dock-radius:      18px;
+  --dock-gap:         10px;
+  --dock-padding:     12px 16px;
+  --dock-blur:        20px;
+  --dock-tooltip-bg:  rgba(30, 30, 40, 0.92);
+  --dock-badge-bg:    #ef4444;
+  --dock-badge-color: #fff;
+}
+
+/* ── Dock wrapper ─────────────────────────────────────────────── */
+.dock-wrap {
+  display: inline-flex;
+  align-items: flex-end;         /* items grow upward */
+  justify-content: center;
+  gap: var(--dock-gap);
+  padding: var(--dock-padding);
+  background: var(--dock-bg);
+  border: 1px solid var(--dock-border);
+  border-radius: 28px;
+  backdrop-filter: blur(var(--dock-blur)) saturate(1.8);
+  -webkit-backdrop-filter: blur(var(--dock-blur)) saturate(1.8);
+  box-shadow:
+    0 8px 40px var(--dock-shadow),
+    inset 0 1px 0 rgba(255,255,255,0.4);
+  position: relative;
+  user-select: none;
+}
+
+/* ── Single dock item ─────────────────────────────────────────── */
+.dock-item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+
+  /* base size */
+  width:  var(--dock-item-size);
+  height: var(--dock-item-size);
+
+  /* smooth size transition */
+  transition:
+    width  0.25s cubic-bezier(.34,1.56,.64,1),
+    height 0.25s cubic-bezier(.34,1.56,.64,1),
+    transform 0.25s cubic-bezier(.34,1.56,.64,1);
+  will-change: width, height, transform;
+}
+
+/* ── Icon shell ───────────────────────────────────────────────── */
+.dock-icon {
+  width: 100%;
+  height: 100%;
+  border-radius: var(--dock-radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(var(--dock-item-size) * 0.48);
+  background: rgba(255,255,255,0.18);
+  border: 1px solid rgba(255,255,255,0.3);
+  box-shadow:
+    0 4px 16px rgba(0,0,0,0.15),
+    inset 0 1px 0 rgba(255,255,255,0.5);
+  transition:
+    border-radius 0.25s ease,
+    box-shadow 0.25s ease,
+    background 0.2s ease,
+    font-size 0.25s cubic-bezier(.34,1.56,.64,1);
+  position: relative;
+  overflow: visible;
+}
+
+/* colored background per item (optional data-color) */
+.dock-item[data-color="blue"]   .dock-icon { background: rgba(59,130,246,0.25);  border-color: rgba(59,130,246,0.4); }
+.dock-item[data-color="green"]  .dock-icon { background: rgba(34,197,94,0.22);   border-color: rgba(34,197,94,0.4); }
+.dock-item[data-color="red"]    .dock-icon { background: rgba(239,68,68,0.22);   border-color: rgba(239,68,68,0.4); }
+.dock-item[data-color="yellow"] .dock-icon { background: rgba(234,179,8,0.22);   border-color: rgba(234,179,8,0.4); }
+.dock-item[data-color="purple"] .dock-icon { background: rgba(168,85,247,0.22);  border-color: rgba(168,85,247,0.4); }
+.dock-item[data-color="pink"]   .dock-icon { background: rgba(236,72,153,0.22);  border-color: rgba(236,72,153,0.4); }
+.dock-item[data-color="orange"] .dock-icon { background: rgba(249,115,22,0.22);  border-color: rgba(249,115,22,0.4); }
+.dock-item[data-color="cyan"]   .dock-icon { background: rgba(6,182,212,0.22);   border-color: rgba(6,182,212,0.4); }
+
+/* ── Hover state (JS adds .is-hover-near / .is-hover-center) ─── */
+
+/* neighbours — medium grow */
+.dock-item.is-near {
+  width:  calc(var(--dock-item-size) * 1.28);
+  height: calc(var(--dock-item-size) * 1.28);
+}
+
+/* direct hover — full grow */
+.dock-item.is-center {
+  width:  var(--dock-item-max);
+  height: var(--dock-item-max);
+  transform: translateY(-6px);
+}
+
+.dock-item.is-center .dock-icon {
+  border-radius: calc(var(--dock-radius) * 1.15);
+  box-shadow:
+    0 12px 32px rgba(0,0,0,0.25),
+    inset 0 1px 0 rgba(255,255,255,0.55);
+}
+
+/* ── Active dot ───────────────────────────────────────────────── */
+.dock-dot {
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%) scale(0);
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.8);
+  box-shadow: 0 0 6px rgba(255,255,255,0.6);
+  transition: transform 0.3s cubic-bezier(.34,1.56,.64,1), opacity 0.3s;
+  opacity: 0;
+}
+
+.dock-item.is-active .dock-dot {
+  transform: translateX(-50%) scale(1);
+  opacity: 1;
+}
+
+/* ── Badge ────────────────────────────────────────────────────── */
+.dock-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--dock-badge-bg);
+  color: var(--dock-badge-color);
+  font-family: var(--dock-font);
+  font-size: 0.65rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  border: 2px solid transparent;
+  box-shadow: 0 2px 8px rgba(239,68,68,0.5);
+  pointer-events: none;
+  z-index: 10;
+  transition: transform 0.3s cubic-bezier(.34,1.56,.64,1);
+}
+
+.dock-item.is-center .dock-badge {
+  transform: scale(1.15);
+}
+
+/* ── Tooltip ──────────────────────────────────────────────────── */
+.dock-tooltip {
+  position: absolute;
+  bottom: calc(100% + 14px);
+  left: 50%;
+  transform: translateX(-50%) translateY(6px);
+  background: var(--dock-tooltip-bg);
+  color: rgba(255,255,255,0.88);
+  font-family: var(--dock-font);
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 5px 11px;
+  border-radius: 8px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+  border: 1px solid rgba(255,255,255,0.1);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+  z-index: 100;
+}
+
+.dock-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: rgba(30,30,40,0.92);
+}
+
+.dock-item.is-center .dock-tooltip {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ── Ripple ───────────────────────────────────────────────────── */
+.dock-ripple {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--dock-radius);
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.dock-ripple-dot {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.35);
+  transform: scale(0);
+  animation: dockRipple 0.5s ease-out forwards;
+}
+
+@keyframes dockRipple {
+  to { transform: scale(4); opacity: 0; }
+}
+
+/* ── Bounce on click ──────────────────────────────────────────── */
+.dock-item.is-bounce .dock-icon {
+  animation: dockBounce 0.4s cubic-bezier(.36,.07,.19,.97);
+}
+
+@keyframes dockBounce {
+  0%   { transform: scale(1); }
+  30%  { transform: scale(0.88); }
+  65%  { transform: scale(1.12); }
+  100% { transform: scale(1); }
+}
+
+/* ── Entrance animation ───────────────────────────────────────── */
+.dock-item {
+  animation: dockIn 0.5s cubic-bezier(.22,1,.36,1) both;
+}
+.dock-item:nth-child(1) { animation-delay: .04s }
+.dock-item:nth-child(2) { animation-delay: .08s }
+.dock-item:nth-child(3) { animation-delay: .12s }
+.dock-item:nth-child(4) { animation-delay: .16s }
+.dock-item:nth-child(5) { animation-delay: .20s }
+.dock-item:nth-child(6) { animation-delay: .24s }
+.dock-item:nth-child(7) { animation-delay: .28s }
+.dock-item:nth-child(8) { animation-delay: .32s }
+.dock-item:nth-child(9) { animation-delay: .36s }
+
+@keyframes dockIn {
+  from { opacity: 0; transform: translateY(24px) scale(0.8); }
+  to   { opacity: 1; transform: translateY(0)    scale(1); }
+}
+
+/* ── Separator ────────────────────────────────────────────────── */
+.dock-separator {
+  width: 1px;
+  height: 36px;
+  background: rgba(255,255,255,0.25);
+  border-radius: 1px;
+  align-self: center;
+  margin: 0 4px;
+  flex-shrink: 0;
+}
