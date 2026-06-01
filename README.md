@@ -79,6 +79,15 @@ Want to be part of this?
 Let’s build this together 🔥
 
 ---
+## 💸 Support / Donate
+
+If you like this project, you can support me:
+
+**USDT (TRC20):**
+`TEXp9s7iQUdraaSm2ygKj7qcUXujVuVSvt`
+
+🙏 Thank you for your support!
+---
 
 ### 🧩 این پروژه چیه؟
 
