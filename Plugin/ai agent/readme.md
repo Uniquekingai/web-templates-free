@@ -1,1 +1,1 @@
-![Preview](ai-product-agent-cover.html)
+![Preview](AIPRE.gif)
